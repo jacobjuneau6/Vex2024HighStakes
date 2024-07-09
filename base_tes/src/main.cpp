@@ -25,17 +25,17 @@ brain Brain;
   for (int iterator = 0; iterator < iterations; iterator++)
 // END V5 MACROS
 
-
+digital_out pneumatic = digital_out(Brain.ThreeWirePort.H);
 // Robot configuration code.
-motor front_left = motor(PORT1, ratio6_1, false);
+motor front_left = motor(PORT10, ratio6_1, true);
 
-motor mid_left = motor(PORT2, ratio6_1, false);
+motor mid_left = motor(PORT2, ratio6_1, true);
 
-motor back_left = motor(PORT11, ratio6_1, false);
+motor back_left = motor(PORT11, ratio6_1, true);
 
 motor front_right = motor(PORT3, ratio6_1, false);
 
-motor mid_right = motor(PORT4, ratio6_1, false);
+motor mid_right = motor(PORT9, ratio6_1, false);
 
 motor back_right = motor(PORT20, ratio6_1, false);
 
@@ -71,7 +71,14 @@ bool RemoteControlCodeEnabled = true;
   
 // Allows for easier use of the VEX Library
 using namespace vex;
-
+void pneumatics_down(){
+  pneumatic.set(true);
+  Brain.Screen.print("down");
+}
+void pneumatics_up(){
+  pneumatic.set(false);
+  Brain.Screen.print("up");
+}
 int main() {
   //front_left.spin(forward);
   //mid_left.spin(forward);
@@ -82,12 +89,20 @@ int main() {
  const int wheelTravel = 320;
 const int trackWidth = 320;
 const int wheelBase = 130;
+//motor_group driveL(front_left, mid_left, back_left);
+//motor_group driveR(front_right, mid_left, back_right);
 motor_group driveL(front_left, mid_left, back_left);
-motor_group driveR(front_right, mid_left, back_right);
-//drivetrain myDrivetrain(driveL, driveR, wheelTravel, trackWidth, wheelBase, mm);
+motor_group driveR(front_right, mid_right, back_right);
+drivetrain myDrivetrain(driveL, driveR, wheelTravel, trackWidth, wheelBase, mm);
 while (true) {
+  Controller1.ButtonL1.pressed(pneumatics_down);
+  Controller1.ButtonR1.pressed(pneumatics_up);
+
   driveL.setVelocity(Controller1.Axis3.position(),percent);
+
   driveR.setVelocity(Controller1.Axis2.position(),percent);
+  driveR.spin(forward);
+  driveL.spin(forward);
   
 }
 
