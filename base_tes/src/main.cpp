@@ -1,21 +1,13 @@
 #pragma region VEXcode Generated Robot Configuration
-// Make sure all required headers are included.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
 #include <string.h>
-
-
 #include "vex.h"
-
 using namespace vex;
-
-// Brain should be defined by default
 brain Brain;
-
-
-// START V5 MACROS
 #define waitUntil(condition)                                                   \
   do {                                                                         \
     wait(5, msec);                                                             \
@@ -23,37 +15,27 @@ brain Brain;
 
 #define repeat(iterations)                                                     \
   for (int iterator = 0; iterator < iterations; iterator++)
-// END V5 MACROS
 
-digital_out pneumatic = digital_out(Brain.ThreeWirePort.H);
-// Robot configuration code.
-motor front_left = motor(PORT10, ratio6_1, true);
 
-motor mid_left = motor(PORT2, ratio6_1, true);
 
-motor back_left = motor(PORT11, ratio6_1, true);
+//port setup
+digital_out pneumatic_sys = digital_out(Brain.ThreeWirePort.H);                  /*  pneumatics are connected to 3-wire port H  */
+motor front_left_motor = motor(PORT10, ratio6_1, true);                          /*  front left motor connected to port 10      */
+motor mid_left_motor = motor(PORT2, ratio6_1, true);                             /*  middle left motor connected to port 2      */
+motor back_left_motor = motor(PORT11, ratio6_1, true);                           /*  back left motor connected to port 11       */
+motor front_right_motor = motor(PORT3, ratio6_1, false);                         /*  front right motor connected to port 3      */
+motor mid_right_motor = motor(PORT5, ratio6_1, false);                           /*  middle right motor connected to port 5     */
+motor back_right_motor = motor(PORT20, ratio6_1, false);                         /*  back right motor connected to port 20      */
+controller Controller1 = controller(primary);                                    /*  controller radio connected to port 21      */
+motor intake = motor(PORT7, ratio18_1, true);                                    /*  intake motor connected to port 7           */
+motor move = motor(PORT8, ratio6_1, false);                                      /*  donut pulling motor connected to port 8    */
 
-motor front_right = motor(PORT3, ratio6_1, false);
 
-motor mid_right = motor(PORT5, ratio6_1, false);
 
-motor back_right = motor(PORT20, ratio6_1, false);
-
-controller Controller1 = controller(primary);
-
-motor intake = motor(PORT7, ratio18_1, true);
-motor pull = motor(PORT8, ratio6_1, false);
-
-// Helper to make playing sounds from the V5 in VEXcode easier and
-// keeps the code cleaner by making it clear what is happening.
 void playVexcodeSound(const char *soundName) {
   printf("VEXPlaySound:%s\n", soundName);
   wait(5, msec);
 }
-
-
-
-// define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
 
 #pragma endregion VEXcode Generated Robot Configuration
@@ -63,60 +45,79 @@ bool RemoteControlCodeEnabled = true;
 /*    Module:       main.cpp                                                  */
 /*    Author:       Jacob Juneau                                              */
 /*    Created:      07/24/24                                                  */
-/*    Description:  V5 project                                                */
+/*    Description:  Driving code for 3050Z                                    */
 /*                                                                            */
 /*----------------------------------------------------------------------------*/
 
-// Include the V5 Library
 #include "vex.h"
- void intakeon(){
+void up(){
+  move.spin(forward);
+}
+
+ void intake_on(){
   intake.setVelocity(200, percent);
   intake.spin(forward);
  } 
-void intakeoff(){
+
+void intake_off(){
   intake.setVelocity(0, percent);
 }
-void up(){
-  pull.spin(forward);
+
+void move_donut_up(){
+  move.spin(forward);
 }
+
 void down(){
-  pull.stop();
+  move.stop();
 }
-// Allows for easier use of the VEX Library
+
 using namespace vex;
+
 void pneumatics_down(){
-  pneumatic.set(true);
-  Brain.Screen.print("down");
+  pneumatic_sys.set(true);
 }
+
 void pneumatics_up(){
-  pneumatic.set(false);
-  Brain.Screen.print("up");
+  pneumatic_sys.set(false);
 }
+
 int main() {
-const int wheelTravel = 320;
-const int trackWidth = 320;
-const int wheelBase = 130;
-motor_group driveL(front_left, mid_left, back_left);
-motor_group driveR(front_right, mid_right, back_right);
-drivetrain myDrivetrain(driveL, driveR, wheelTravel, trackWidth, wheelBase, mm);
+motor_group driveL(front_left_motor, mid_left_motor, back_left_motor);
+
+motor_group driveR(front_right_motor, mid_right_motor, back_right_motor);
+
 while (true) {
+
   Controller1.ButtonL1.pressed(pneumatics_down);
+
   Controller1.ButtonR1.pressed(pneumatics_up);
-  Controller1.ButtonA.pressed(intakeon);
-  Controller1.ButtonB.pressed(intakeoff);
-  if (Controller1.ButtonX.pressing()){
-    pull.setVelocity(200, rpm);
-    pull.spin(forward);
-  } else {pull.stop();}
 
+  Controller1.ButtonLeft.pressed(up);
+
+  //Controller1.ButtonA.pressed(intake_on);
+  //Controller1.ButtonUp.pressed(intake_on);
+
+  Controller1.ButtonB.pressed(intake_off);
+
+  if (Controller1.ButtonUp.pressing()){
+    Brain.Screen.print("up pressed");
+  }
+   // Brain.Screen.print('up pressed');
+    //move.setVelocity(200, rpm); //200rpm is best for reliability
+   // move.spin(forward); //make the motor spin
+  
+
+  if (Controller1.ButtonDown.pressing()){
+    move.setVelocity(200, rpm); //200rpm is best for reliability
+    move.spin(reverse); //make the motor spin
+  } 
+
+  else {
+    move.stop();
+  }
   driveL.setVelocity(Controller1.Axis3.position(),percent);
-
   driveR.setVelocity(Controller1.Axis2.position(),percent);
   driveR.spin(forward);
   driveL.spin(forward);
-  
 }
-
-
-
 }
