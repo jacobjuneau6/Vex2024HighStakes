@@ -104,7 +104,7 @@ while (true) {
   Controller1.ButtonR1.pressed(pneumatics_up);
   Controller1.ButtonA.pressed(intakeon);
   Controller1.ButtonB.pressed(intakeoff);
-  if (Controller1.ButtonX.pressing()){
+  if (Controller1.ButtonUp.pressing()){
     pull.setVelocity(200, rpm);
     pull.spin(forward);
   } else {pull.stop();}
