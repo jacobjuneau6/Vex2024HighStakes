@@ -1,4 +1,4 @@
-#pragma region VEXcode Generated Robot Configuration
+//#pragma region VEXcode Generated Robot Configuration
 // Make sure all required headers are included.
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,9 +41,9 @@ motor back_right = motor(PORT20, ratio6_1, false);
 
 controller Controller1 = controller(primary);
 
-motor intake = motor(PORT7, ratio18_1, true);
+motor intake = motor(PORT17, ratio18_1, true);
 
-motor pull = motor(PORT8, ratio6_1, false);
+motor pull = motor(PORT7, ratio6_1, false);
 
 
 void playVexcodeSound(const char *soundName) {
@@ -56,7 +56,7 @@ void playVexcodeSound(const char *soundName) {
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
 
-#pragma endregion VEXcode Generated Robot Configuration
+//#pragma endregion VEXcode Generated Robot Configuration
 
 /*----------------------------------------------------------------------------*/
 /*                                                                            */
@@ -70,6 +70,7 @@ bool RemoteControlCodeEnabled = true;
 // Include the V5 Library
 
  void intakeon(){
+  Brain.Screen.print('on');
   intake.setVelocity(200, percent);
   intake.spin(forward);
  } 
@@ -125,14 +126,15 @@ while (true) {
   } else {
     pull.stop();
     }
-//get thumbstick position
+//get thumbstick 
+
   driveL.setVelocity(Controller1.Axis3.position(),percent);
 
   driveR.setVelocity(Controller1.Axis2.position(),percent);
 //spin the motors using that position 
- // driveR.spin(forward);
+  driveR.spin(forward);
 
- // driveL.spin(forward);
+  driveL.spin(forward);
   
 }
 
