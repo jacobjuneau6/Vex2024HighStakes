@@ -44,8 +44,10 @@ controller Controller1 = controller(primary);
 motor intake = motor(PORT17, ratio18_1, true);
 
 motor pull = motor(PORT7, ratio6_1, false);
-
-
+motor_group LeftDriveSmart = motor_group(front_left, mid_left, back_left);
+motor_group RightDriveSmart = motor_group(front_right, mid_right, back_right);
+inertial DrivetrainInertial = inertial(PORT19);
+smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, DrivetrainInertial, 190, 267, 89, mm, 1.33333333333);
 void playVexcodeSound(const char *soundName) {
   printf("VEXPlaySound:%s\n", soundName);
   wait(5, msec);
@@ -54,7 +56,7 @@ void playVexcodeSound(const char *soundName) {
 
 
 // define variable for remote controller enable/disable
-bool RemoteControlCodeEnabled = true;
+//bool RemoteControlCodeEnabled = true;
 
 //#pragma endregion VEXcode Generated Robot Configuration
 
@@ -69,8 +71,24 @@ bool RemoteControlCodeEnabled = true;
 
 // Include the V5 Library
 
+
+bool vexcode_initial_drivetrain_calibration_completed = false;
+void calibrateDrivetrain() {
+  wait(200, msec);
+  Brain.Screen.print("Calibrating");
+  Brain.Screen.newLine();
+  Brain.Screen.print("Inertial");
+  DrivetrainInertial.calibrate();
+  while (DrivetrainInertial.isCalibrating()) {
+    wait(25, msec);
+  }
+  vexcode_initial_drivetrain_calibration_completed = true;
+  // Clears the screen and returns the cursor to row 1, column 1.
+  Brain.Screen.clearScreen();
+  Brain.Screen.setCursor(1, 1);
+}
  void intakeon(){
-  Brain.Screen.print('on');
+ // Brain.Screen.print("on");
   intake.setVelocity(200, percent);
   intake.spin(forward);
  } 
@@ -98,19 +116,13 @@ void pneumatics_down(){
 }
 
 int main(){
-motor_group driveL(front_left, mid_left, back_left);
-motor_group driveR(front_right, mid_right, back_right);
-const int wheelTravel = 300;
-const int trackWidth = 320;
-const int wheelBase = 20;
-
-
-
-
-
-
-
-
-
-
+//motor_group driveL(front_left, mid_left, back_left);
+//motor_group driveR(front_right, mid_right, back_right);
+/*const int wheelTravel = 190;
+const int trackWidth = 267;
+const int wheelBase = 89;*/
+//drivetrain myDrivetrain(driveL, driveR, wheelTravel, gyro1, trackWidth, wheelBase, mm);
+//Drivetrain.driveFor(forward, 200, mm);
+//Drivetrain.driveFor(reverse, 200, mm);
+Drivetrain.turnFor(right, 90, degrees);
 }
