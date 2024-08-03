@@ -43,10 +43,12 @@ controller Controller1 = controller(primary);
 
 motor intake = motor(PORT17, ratio18_1, true);
 
-motor pull = motor(PORT7, ratio6_1, false);
+motor pull_left = motor(PORT7, ratio36_1, true);
+motor pull_right = motor(PORT14, ratio36_1, false);
+motor_group pull = motor_group(pull_left, pull_right);
 motor_group LeftDriveSmart = motor_group(front_left, mid_left, back_left);
 motor_group RightDriveSmart = motor_group(front_right, mid_right, back_right);
-inertial DrivetrainInertial = inertial(PORT19);
+inertial DrivetrainInertial = inertial(PORT13);
 smartdrive Drivetrain = smartdrive(LeftDriveSmart, RightDriveSmart, DrivetrainInertial, 190, 267, 89, mm, 1.33333333333);
 void playVexcodeSound(const char *soundName) {
   printf("VEXPlaySound:%s\n", soundName);
@@ -120,9 +122,21 @@ int main(){
 //motor_group driveR(front_right, mid_right, back_right);
 /*const int wheelTravel = 190;
 const int trackWidth = 267;
+ calibrateDrivetrain()
 const int wheelBase = 89;*/
 //drivetrain myDrivetrain(driveL, driveR, wheelTravel, gyro1, trackWidth, wheelBase, mm);
-//Drivetrain.driveFor(forward, 200, mm);
-//Drivetrain.driveFor(reverse, 200, mm);
-Drivetrain.turnFor(right, 90, degrees);
+ calibrateDrivetrain();
+Drivetrain.setDriveVelocity(50, percent);
+Drivetrain.setTurnVelocity(30, percent);
+
+Drivetrain.driveFor(forward, 200, mm);
+Drivetrain.turnFor(90,degrees);
+intakeon();
+pull.spin(forward);
+wait(20, seconds);
+Drivetrain.turnFor(-90, degrees);
+Drivetrain.driveFor(reverse, 280, mm);
+//intakeon();
+//pull.setVelocity(80, rpm);
+//pull.spin(forward);
 }

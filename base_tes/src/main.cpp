@@ -43,7 +43,9 @@ controller Controller1 = controller(primary);
 
 motor intake = motor(PORT17, ratio18_1, true);
 
-motor pull = motor(PORT7, ratio6_1, false);
+motor pull_left = motor(PORT7, ratio36_1, true);
+motor pull_right = motor(PORT14, ratio36_1, false);
+motor_group pull = motor_group(pull_left, pull_right);
 
 
 void playVexcodeSound(const char *soundName) {
@@ -121,11 +123,12 @@ while (true) {
   Controller1.ButtonB.pressed(intakeoff);
 
   if (Controller1.ButtonX.pressing()){
-    pull.setVelocity(200, rpm);
+    pull.setVelocity(80, rpm);
     pull.spin(forward);
-  } else {
-    pull.stop();
+  } else if (Controller1.ButtonY.pressing()) {
+    pull.spin(reverse);
     }
+    else {pull.stop();}
 //get thumbstick 
 
   driveL.setVelocity(Controller1.Axis3.position(),percent);
