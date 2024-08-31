@@ -25,8 +25,10 @@ brain Brain;
 
 
 digital_out pneumatic = digital_out(Brain.ThreeWirePort.H);
-
-
+limit  intake_sense1 = limit(Brain.ThreeWirePort.C);
+limit  intake_sense2 = limit(Brain.ThreeWirePort.E);
+limit pull_sense = limit(Brain.ThreeWirePort.B);
+line pull_sense2 = line(Brain.ThreeWirePort.F);
 motor front_left = motor(PORT10, ratio6_1, true);
 
 motor mid_left = motor(PORT2, ratio6_1, true);
@@ -43,9 +45,9 @@ controller Controller1 = controller(primary);
 
 motor intake = motor(PORT17, ratio18_1, true);
 
-motor pull_left = motor(PORT7, ratio36_1, true);
-motor pull_right = motor(PORT14, ratio36_1, false);
-motor_group pull = motor_group(pull_left, pull_right);
+motor pull_left = motor(PORT7, ratio36_1, false);
+
+
 motor_group LeftDriveSmart = motor_group(front_left, mid_left, back_left);
 motor_group RightDriveSmart = motor_group(front_right, mid_right, back_right);
 inertial DrivetrainInertial = inertial(PORT13);
@@ -91,7 +93,7 @@ void calibrateDrivetrain() {
 }
  void intakeon(){
  // Brain.Screen.print("on");
-  intake.setVelocity(200, percent);
+  intake.setVelocity(180, percent);
   intake.spin(forward);
  } 
 
@@ -102,12 +104,19 @@ void intakeoff(){
 
 
 void up(){
-  pull.spin(forward);
+  pull_left.setVelocity(30, percent);
+  pull_left.spin(forward);
+  waitUntil (pull_sense);{ 
+    pull_left.setVelocity(100, percent);
+  }
+ /* waitUntil (pull_sense2);{
+    pull_left.setVelocity(0,percent);
+  }*/
 }
 
 
 void down(){
-  pull.stop();
+  pull_left.stop();
 }
 // Allows for easier use of the VEX Library
 using namespace vex;
@@ -125,18 +134,47 @@ const int trackWidth = 267;
  calibrateDrivetrain()
 const int wheelBase = 89;*/
 //drivetrain myDrivetrain(driveL, driveR, wheelTravel, gyro1, trackWidth, wheelBase, mm);
- calibrateDrivetrain();
+ /*calibrateDrivetrain();
 Drivetrain.setDriveVelocity(50, percent);
-Drivetrain.setTurnVelocity(30, percent);
-
+Drivetrain.setTurnVelocity(15, percent);
+Drivetrain.setStopping(hold);
+Drivetrain.setHeading(0, degrees);
 Drivetrain.driveFor(forward, 200, mm);
-Drivetrain.turnFor(90,degrees);
-intakeon();
-pull.spin(forward);
-wait(20, seconds);
-Drivetrain.turnFor(-90, degrees);
-Drivetrain.driveFor(reverse, 280, mm);
+//Drivetrain.turnFor(90,degrees);
+//intakeon();
+//pull.spin(forward);
+//wait(20, seconds);
+//Drivetrain.turnFor(-90, degrees);
+//Drivetrain.driveFor(reverse, 280, mm);
+Drivetrain.setHeading(0, degrees);
+Drivetrain.turnToHeading(90, degrees);
+wait(5, seconds);
+Drivetrain.turnToHeading(0, degrees);
+Drivetrain.driveFor(reverse, 200, mm);-
 //intakeon();
 //pull.setVelocity(80, rpm);
-//pull.spin(forward);
+//pull.spin(forward
+*/
+/*intakeon();
+wait(1, seconds);
+Brain.Screen.print("ready");
+while (true) {
+  if (intake_sense1 or intake_sense2) {
+    wait(0.5, seconds);
+  intakeoff();
+  up();
+  intakeon();
+} }*/
+  while(true) {
+    // Clear the screen and set the cursor to top left corner on each loop
+    Brain.Screen.clearScreen();
+    Brain.Screen.setCursor(1, 1);
+
+    Brain.Screen.print("Reflectivity: %d", pull_sense2.reflectivity(percent));
+    Brain.Screen.newLine();
+
+    // A brief delay to allow text to be printed without distortion or tearing
+    wait(20, msec);
+  }
+
 }
