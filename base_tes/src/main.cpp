@@ -72,7 +72,7 @@ bool RemoteControlCodeEnabled = true;
 // Include the V5 Library
 
  void intakeon(){
-  Brain.Screen.print('on');
+  //Brain.Screen.print('on');
   intake.setVelocity(200, percent);
   intake.spin(forward);
  } 
@@ -123,7 +123,7 @@ while (true) {
   Controller1.ButtonB.pressed(intakeoff);
 
   if (Controller1.ButtonX.pressing()){
-    pull.setVelocity(80, rpm);
+    pull.setVelocity(85, rpm);
     pull.spin(forward);
   } else if (Controller1.ButtonY.pressing()) {
     pull.spin(reverse);
