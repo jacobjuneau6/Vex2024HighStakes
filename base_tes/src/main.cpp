@@ -41,11 +41,12 @@ motor back_right = motor(PORT20, ratio6_1, false);
 
 controller Controller1 = controller(primary);
 
-motor intake = motor(PORT17, ratio18_1, true);
+controller Controller2 = controller(partner);
+motor intake = motor(PORT9, ratio18_1, true);
 
 motor pull_left = motor(PORT7, ratio36_1, true);
-motor pull_right = motor(PORT14, ratio36_1, false);
-motor_group pull = motor_group(pull_left, pull_right);
+//motor pull_right = motor(PORT14, ratio36_1, false); depracted we switched back to one motor
+motor_group pull = motor_group(pull_left);// i downt feel like fixing this just leave it
 
 
 void playVexcodeSound(const char *soundName) {
@@ -57,7 +58,6 @@ void playVexcodeSound(const char *soundName) {
 
 // define variable for remote controller enable/disable
 bool RemoteControlCodeEnabled = true;
-
 //#pragma endregion VEXcode Generated Robot Configuration
 
 /*----------------------------------------------------------------------------*/
@@ -107,25 +107,28 @@ void pneumatics_up(){
 
 
 int main() {
-  
 
 motor_group driveL(front_left, mid_left, back_left);
 motor_group driveR(front_right, mid_right, back_right);
-
+Controller1.Screen.print("DRIVE & GOAL");
+Controller2.Screen.print("INTAKE & SCORING");
+Controller1.rumble("------------------------");
+Controller2.rumble("------------------------");
 while (true) {
   //check controller buttons and do actions based on them
   Controller1.ButtonL1.pressed(pneumatics_down);
 
   Controller1.ButtonR1.pressed(pneumatics_up);
 
-  Controller1.ButtonA.pressed(intakeon);
+  Controller2.ButtonA.pressed(intakeon);
 
-  Controller1.ButtonB.pressed(intakeoff);
+  Controller2.ButtonB.pressed(intakeoff);
 
-  if (Controller1.ButtonX.pressing()){
-    pull.setVelocity(85, rpm);
+  if (Controller2.ButtonX.pressing()){
+    pull.setVelocity(800, rpm);
+   // pull.setVelocity(100,percent);
     pull.spin(forward);
-  } else if (Controller1.ButtonY.pressing()) {
+  } else if (Controller2.ButtonY.pressing()) {
     pull.spin(reverse);
     }
     else {pull.stop();}
